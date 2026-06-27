@@ -43,6 +43,16 @@ export interface HostSubmission {
   submittedAt: string;
 }
 
+export const GUEST_PROFILE_KEY = "nexus_guest_profile";
+
+export interface GuestProfile {
+  company: string;
+  website: string;
+  contactName: string;
+  contactEmail: string;
+  vcNetwork: string;
+}
+
 export interface GuestSubmission {
   id: string;
   company: string;
