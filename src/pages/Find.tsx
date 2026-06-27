@@ -81,7 +81,7 @@ export default function Find() {
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl">
           Find your space in Singapore.
         </h1>
-        <p className="mt-3 text-white/60">
+        <p className="mt-3 text-ink/60">
           Search trusted offices across the network.
         </p>
       </div>
@@ -107,8 +107,8 @@ export default function Find() {
         </div>
       ) : (
         <div className="mx-auto mt-16 max-w-md text-center">
-          <p className="text-lg font-semibold text-white">No spaces match your search</p>
-          <p className="mt-2 text-sm text-white/60">
+          <p className="text-lg font-semibold text-ink">No spaces match your search</p>
+          <p className="mt-2 text-sm text-ink/60">
             Try a different location or a smaller team size.
           </p>
         </div>

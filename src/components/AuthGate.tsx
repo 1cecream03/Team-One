@@ -3,8 +3,8 @@ import Panel from "./Panel";
 import { AUTH_CHANGE_EVENT, AUTH_KEY, AuthSession, UserRole } from "../types";
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-accent";
-const labelClass = "mb-1.5 block text-sm font-medium text-white/80";
+  "w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink/30 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/15";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink/70";
 
 export function loadAuth(): AuthSession | null {
   const raw = localStorage.getItem(AUTH_KEY);
@@ -32,12 +32,12 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
 
   return (
     <Panel>
-        <div className="mb-6 flex gap-2 rounded-full border border-border bg-white/5 p-1 text-sm font-medium">
+        <div className="mb-6 flex gap-2 rounded-full border border-border bg-accent/5 p-1 text-sm font-medium">
           <button
             type="button"
             onClick={() => setMode("signin")}
             className={`flex-1 rounded-full py-2 transition ${
-              mode === "signin" ? "bg-accent text-white" : "text-white/60"
+              mode === "signin" ? "bg-accent text-white" : "text-ink/60"
             }`}
           >
             Sign in
@@ -46,7 +46,7 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
             type="button"
             onClick={() => setMode("register")}
             className={`flex-1 rounded-full py-2 transition ${
-              mode === "register" ? "bg-accent text-white" : "text-white/60"
+              mode === "register" ? "bg-accent text-white" : "text-ink/60"
             }`}
           >
             Create account
@@ -56,7 +56,7 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
         <h1 className="text-2xl font-bold">
           {mode === "signin" ? "Welcome back" : "Join your network"}
         </h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm text-ink/60">
           {mode === "signin"
             ? "Sign in with your company email to continue."
             : "Create an account with your company email to continue."}
@@ -71,8 +71,8 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
                 onClick={() => setRole("guest")}
                 className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                   role === "guest"
-                    ? "border-accent bg-accent/15 text-white"
-                    : "border-border bg-white/5 text-white/60 hover:text-white"
+                    ? "border-accent bg-accent/15 text-accent"
+                    : "border-border bg-white text-ink/60 hover:text-ink"
                 }`}
               >
                 Guest — booking space
@@ -82,8 +82,8 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
                 onClick={() => setRole("host")}
                 className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                   role === "host"
-                    ? "border-accent bg-accent/15 text-white"
-                    : "border-border bg-white/5 text-white/60 hover:text-white"
+                    ? "border-accent bg-accent/15 text-accent"
+                    : "border-border bg-white text-ink/60 hover:text-ink"
                 }`}
               >
                 Host — listing space
@@ -117,7 +117,7 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
 
           <button
             type="submit"
-            className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)]"
+            className="w-full rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-floating"
           >
             {mode === "signin" ? "Sign in" : "Create account"}
           </button>

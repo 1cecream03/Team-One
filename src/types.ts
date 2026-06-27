@@ -48,8 +48,8 @@ export interface HostSubmission {
   submittedAt: string;
 }
 
-export const AUTH_KEY = "nexus_auth";
-export const AUTH_CHANGE_EVENT = "nexus-auth-change";
+export const AUTH_KEY = "rift_auth";
+export const AUTH_CHANGE_EVENT = "rift-auth-change";
 
 export type UserRole = "host" | "guest";
 

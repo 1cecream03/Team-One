@@ -10,7 +10,7 @@ export default function ConfirmationScreen() {
         <h1 className="text-2xl font-bold sm:text-3xl">
           Thanks — a concierge will reach out within 24 hours.
         </h1>
-        <p className="mt-3 text-white/60">
+        <p className="mt-3 text-ink/60">
           We're matching you against verified companies in your portfolio
           network now.
         </p>

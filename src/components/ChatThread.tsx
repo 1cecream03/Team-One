@@ -30,17 +30,17 @@ export default function ChatThread({
 
   return (
     <div>
-      <div className="max-h-64 space-y-2 overflow-y-auto rounded-lg border border-border bg-white/5 p-3">
+      <div className="max-h-64 space-y-2 overflow-y-auto rounded-xl border border-border bg-accent/5 p-3">
         {messages.length === 0 && (
-          <p className="text-sm text-white/40">No messages yet.</p>
+          <p className="text-sm text-ink/40">No messages yet.</p>
         )}
         {messages.map((message, i) => (
           <div
             key={i}
-            className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+            className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${
               message.sender === currentSender
                 ? "ml-auto bg-accent text-white"
-                : "bg-white/10 text-white/90"
+                : "bg-sky/25 text-ink"
             }`}
           >
             <p>{message.text}</p>
@@ -57,11 +57,11 @@ export default function ChatThread({
           value={reply}
           onChange={(e) => setReply(e.target.value)}
           placeholder={`Reply as ${currentSender}…`}
-          className="w-full rounded-lg border border-border bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-accent"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-accent"
         />
         <button
           type="submit"
-          className="shrink-0 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+          className="shrink-0 rounded-lg bg-accent/10 px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/20"
         >
           Send
         </button>

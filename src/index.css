@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 body {
-  background-color: #0a0f1e;
-  color: white;
+  background-color: #f9f9f6;
+  color: #2c2c2c;
   font-family: "Inter", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Plus Jakarta Sans", sans-serif;
 }

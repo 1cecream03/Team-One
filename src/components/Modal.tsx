@@ -16,7 +16,7 @@ export default function Modal({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-background/80 px-4 py-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/40 px-4 py-10 backdrop-blur-sm">
       <div
         className="absolute inset-0"
         onClick={onClose}
@@ -26,7 +26,7 @@ export default function Modal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute -top-10 right-0 text-sm text-white/60 transition hover:text-white"
+          className="absolute -top-10 right-0 text-sm text-white/70 transition hover:text-white"
         >
           Close ✕
         </button>

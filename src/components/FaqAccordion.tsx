@@ -2,14 +2,14 @@ import { useState } from "react";
 
 const faqs = [
   {
-    question: "Who can actually use Nexus?",
+    question: "Who can actually use Rift?",
     answer:
       "Only companies backed by a participating VC fund. We verify portfolio membership before any account goes live, so every host and guest on the platform shares the same investor — there are no open marketplace listings and no public sign-ups.",
   },
   {
     question: "How does payment work?",
     answer:
-      "Hosts set an hourly or daily rate (or let us suggest one based on comparable spaces in their network). Invoicing happens directly between the two companies — Nexus facilitates the introduction and terms, but never touches the money.",
+      "Hosts set an hourly or daily rate (or let us suggest one based on comparable spaces in their network). Invoicing happens directly between the two companies — Rift facilitates the introduction and terms, but never touches the money.",
   },
   {
     question: "Who's liable if something goes wrong in the space?",
@@ -37,7 +37,7 @@ export default function FaqAccordion() {
               onClick={() => setOpenIndex(isOpen ? null : index)}
               className="flex w-full items-center justify-between text-left"
             >
-              <span className="font-medium text-white">{faq.question}</span>
+              <span className="font-medium text-ink">{faq.question}</span>
               <span
                 className={`ml-4 shrink-0 text-accent transition-transform ${
                   isOpen ? "rotate-45" : ""
@@ -47,7 +47,7 @@ export default function FaqAccordion() {
               </span>
             </button>
             {isOpen && (
-              <p className="mt-3 text-sm leading-relaxed text-white/60">
+              <p className="mt-3 text-sm leading-relaxed text-ink/60">
                 {faq.answer}
               </p>
             )}

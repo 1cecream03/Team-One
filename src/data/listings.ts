@@ -128,7 +128,7 @@ function hostSubmissionToListing(
 
 function loadHostListings(): SpaceListing[] {
   const hosts: HostSubmission[] = JSON.parse(
-    localStorage.getItem("nexus_hosts") ?? "[]",
+    localStorage.getItem("rift_hosts") ?? "[]",
   );
   return hosts.map((host, index) =>
     hostSubmissionToListing(host, LISTINGS_BASE.length + index),

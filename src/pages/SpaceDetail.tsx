@@ -13,9 +13,9 @@ function minTeamSize(range: string): number {
 }
 
 const microLabelClass =
-  "block text-[10px] font-bold uppercase tracking-wide text-white/40";
+  "block text-[10px] font-bold uppercase tracking-wide text-ink/40";
 const gridInputClass =
-  "mt-0.5 w-full border-none bg-transparent p-0 text-sm text-white outline-none [color-scheme:dark]";
+  "mt-0.5 w-full border-none bg-transparent p-0 text-sm text-ink outline-none";
 
 const HOURS_PER_DAY = 8;
 
@@ -60,7 +60,7 @@ export default function SpaceDetail() {
         <h1 className="text-2xl font-bold">Listing not found</h1>
         <Link
           to="/find"
-          className="mt-6 inline-block rounded-full border border-border px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:border-white/30"
+          className="mt-6 inline-block rounded-full border border-border bg-white px-6 py-3 text-sm font-semibold text-ink shadow-soft transition hover:scale-105 hover:border-ink/20"
         >
           Back to search
         </Link>
@@ -94,11 +94,11 @@ export default function SpaceDetail() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
-      <Link to="/find" className="text-sm text-white/60 transition hover:text-white">
+      <Link to="/find" className="text-sm text-ink/60 transition hover:text-ink">
         ← Back to search
       </Link>
 
-      <div className="mt-6 grid grid-cols-1 gap-2 overflow-hidden rounded-2xl sm:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-2 overflow-hidden rounded-3xl shadow-soft sm:grid-cols-2">
         <img
           src={listing.images[0]}
           alt={listing.name}
@@ -122,20 +122,20 @@ export default function SpaceDetail() {
             {listing.regionLabel} · {listing.neighborhood}
           </span>
           <h1 className="mt-3 text-3xl font-bold sm:text-4xl">{listing.name}</h1>
-          <p className="mt-2 text-sm text-white/60">
+          <p className="mt-2 text-sm text-ink/60">
             Hosted by a {listing.vcNetwork} portfolio company
           </p>
-          <p className="mt-6 max-w-xl text-white/70">{listing.description}</p>
+          <p className="mt-6 max-w-xl text-ink/70">{listing.description}</p>
 
           <div className="mt-8">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
               Amenities
             </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {listing.amenities.map((amenity) => (
                 <span
                   key={amenity}
-                  className="rounded-full border border-border bg-white/5 px-3 py-1.5 text-xs text-white/80"
+                  className="rounded-full border border-border bg-accent/5 px-3 py-1.5 text-xs text-ink/80"
                 >
                   {amenity}
                 </span>
@@ -144,17 +144,17 @@ export default function SpaceDetail() {
           </div>
         </div>
 
-        <div className="h-fit w-full max-w-xs rounded-xl border border-border bg-white/5 p-6 shadow-lg shadow-black/20 backdrop-blur-sm">
+        <div className="h-fit w-full max-w-xs rounded-3xl border border-border bg-white p-6 shadow-soft">
           {/* Header: pricing */}
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-white underline decoration-2">
+            <span className="text-2xl font-bold text-ink underline decoration-accent decoration-2">
               S${days > 0 ? total : listing.rate}
             </span>
             {days === 0 && (
-              <span className="text-sm font-normal text-white/50">/ hr</span>
+              <span className="text-sm font-normal text-ink/50">/ hr</span>
             )}
           </div>
-          <p className="mt-1 text-xs text-white/50">
+          <p className="mt-1 text-xs text-ink/50">
             {days > 0
               ? `${days} day${days > 1 ? "s" : ""} · ${HOURS_PER_DAY}hrs/day`
               : "Per hour"}
@@ -191,11 +191,11 @@ export default function SpaceDetail() {
               >
                 <div>
                   <span className={microLabelClass}>Guests</span>
-                  <span className="mt-0.5 block text-sm text-white">
+                  <span className="mt-0.5 block text-sm text-ink">
                     {guestRange ? `${guestRange} people` : `Up to ${listing.capacity}`}
                   </span>
                 </div>
-                <ChevronDown size={16} className="shrink-0 text-white/40" />
+                <ChevronDown size={16} className="shrink-0 text-ink/40" />
               </button>
 
               <AnimatePresence>
@@ -205,7 +205,7 @@ export default function SpaceDetail() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-background/95 p-3 shadow-xl backdrop-blur-md"
+                    className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-white p-3 shadow-floating"
                   >
                     <div className="space-y-1">
                       {availableRanges.map((range) => (
@@ -219,7 +219,7 @@ export default function SpaceDetail() {
                           className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
                             guestRange === range
                               ? "bg-accent text-white"
-                              : "text-white/80 hover:bg-white/10"
+                              : "text-ink/80 hover:bg-accent/5"
                           }`}
                         >
                           {range} people
@@ -233,9 +233,9 @@ export default function SpaceDetail() {
           </div>
 
           {/* Informational banner */}
-          <div className="mt-4 rounded-md bg-white/5 px-3 py-2 text-center text-xs text-white/60">
+          <div className="mt-4 rounded-xl bg-accent/5 px-3 py-2 text-center text-xs text-ink/60">
             You won't be charged until the host{" "}
-            <span className="font-semibold text-white">confirms</span>.
+            <span className="font-semibold text-ink">confirms</span>.
           </div>
 
           {/* CTA */}
@@ -243,13 +243,13 @@ export default function SpaceDetail() {
             type="button"
             disabled={!canReserve}
             onClick={() => setBookingOpen(true)}
-            className="mt-4 block w-full rounded-lg bg-accent px-6 py-3.5 text-center text-base font-bold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-none"
+            className="mt-4 block w-full rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3.5 text-center text-base font-bold text-white transition hover:scale-105 hover:shadow-floating disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-none"
           >
             {days > 0 ? `Request to book · S$${total}` : "Request to book"}
           </button>
 
           {/* Footer microcopy */}
-          <p className="mt-3 text-center text-xs text-white/40">
+          <p className="mt-3 text-center text-xs text-ink/40">
             No commitment until your request is accepted.
           </p>
         </div>

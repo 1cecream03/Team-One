@@ -10,7 +10,7 @@ const valueProps = [
   {
     title: "Guests",
     description:
-      "Book trusted space in minutes — no broker calls, no cold leasing, no liability surprises. Every space on Nexus belongs to a company backed by your own fund.",
+      "Book trusted space in minutes — no broker calls, no cold leasing, no liability surprises. Every space on Rift belongs to a company backed by your own fund.",
   },
   {
     title: "Networks",
@@ -31,20 +31,20 @@ export default function Home() {
           <br />
           Turn it into runway.
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60">
-          Nexus connects companies in the same VC portfolio to share unused
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-ink/60">
+          Rift connects companies in the same VC portfolio to share unused
           office space — pre-vetted, pre-trusted, zero cold outreach.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             to="/list"
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)]"
+            className="rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3 text-sm font-semibold text-white shadow-floating transition hover:scale-105"
           >
             List Your Space
           </Link>
           <Link
             to="/find"
-            className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:border-white/30"
+            className="rounded-full border border-border bg-white px-6 py-3 text-sm font-semibold text-ink shadow-soft transition hover:scale-105 hover:border-ink/20"
           >
             Find a Space
           </Link>
@@ -56,28 +56,32 @@ export default function Home() {
           {valueProps.map((prop) => (
             <div
               key={prop.title}
-              className="rounded-2xl border border-border bg-white/5 p-8 backdrop-blur-sm"
+              className="overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition hover:-translate-y-1 hover:shadow-floating"
             >
-              <h3 className="text-lg font-semibold text-accent">
-                {prop.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/60">
-                {prop.description}
-              </p>
+              <div className="bg-gradient-to-br from-accentFrom to-accentTo px-8 py-6">
+                <h3 className="font-heading text-lg font-bold text-white">
+                  {prop.title}
+                </h3>
+              </div>
+              <div className="p-8">
+                <p className="text-sm leading-relaxed text-ink/70">
+                  {prop.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-white/40">
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-ink/40">
           Built for portfolio companies backed by
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
           {investors.map((investor) => (
             <span
               key={investor}
-              className="text-lg font-semibold text-white/30"
+              className="text-lg font-semibold text-ink/30"
             >
               {investor}
             </span>

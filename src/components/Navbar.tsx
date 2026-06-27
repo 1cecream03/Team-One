@@ -32,66 +32,75 @@ export default function Navbar() {
   }
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-colors ${
-        scrolled
-          ? "border-b border-border bg-background/70 backdrop-blur-md"
-          : "border-b border-transparent"
-      }`}
-    >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-lg font-bold tracking-tight">
-          Nexus
-        </Link>
-        <div className="flex items-center gap-3 text-sm font-medium text-white/80 sm:gap-8">
-          <Link to="/" className="hidden transition hover:text-white sm:inline">
-            Home
+    <div className="sticky top-0 z-50">
+      <div className="h-1 w-full bg-gradient-to-r from-accentFrom via-accent to-accentTo" />
+      <header
+        className={`bg-ink transition-shadow ${scrolled ? "shadow-floating" : ""}`}
+      >
+        <nav className="flex w-full items-center justify-between gap-6 px-4 py-3.5 sm:px-6">
+          <Link
+            to="/"
+            className="flex items-center gap-3 font-heading text-xl font-bold tracking-tight text-white"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-soft">
+              <img
+                src="/logo.jpg"
+                alt="Rift logo"
+                className="h-full w-full rounded-md object-cover"
+              />
+            </span>
+            Rift
           </Link>
-
-          {auth?.role !== "guest" && (
-            <Link to="/list" className="transition hover:text-white">
-              List
+          <div className="flex items-center gap-5 text-base font-medium text-white/80 sm:gap-10">
+            <Link to="/" className="hidden transition hover:text-white sm:inline">
+              Home
             </Link>
-          )}
 
-          {auth?.role === "guest" && (
-            <Link
-              to="/dashboard/guest"
-              className="hidden transition hover:text-white sm:inline"
-            >
-              My Bookings
-            </Link>
-          )}
+            {auth?.role !== "guest" && (
+              <Link to="/list" className="transition hover:text-white">
+                List
+              </Link>
+            )}
 
-          {auth?.role === "host" && (
-            <Link
-              to="/dashboard/host"
-              className="hidden transition hover:text-white sm:inline"
-            >
-              Host Dashboard
-            </Link>
-          )}
+            {auth?.role === "guest" && (
+              <Link
+                to="/dashboard/guest"
+                className="hidden transition hover:text-white sm:inline"
+              >
+                My Bookings
+              </Link>
+            )}
 
-          {auth?.role !== "host" && (
-            <Link
-              to="/find"
-              className="rounded-full bg-accent px-3 py-1.5 text-xs text-white transition hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] sm:px-4 sm:py-2 sm:text-sm"
-            >
-              Find a Space
-            </Link>
-          )}
+            {auth?.role === "host" && (
+              <Link
+                to="/dashboard/host"
+                className="hidden transition hover:text-white sm:inline"
+              >
+                Host Dashboard
+              </Link>
+            )}
 
-          {auth && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="transition hover:text-white"
-            >
-              Log out
-            </button>
-          )}
-        </div>
-      </nav>
-    </header>
+            {auth?.role !== "host" && (
+              <Link
+                to="/find"
+                className="rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-4 py-2 text-sm text-white transition hover:scale-105 hover:shadow-floating sm:px-5 sm:py-2.5 sm:text-base"
+              >
+                Find a Space
+              </Link>
+            )}
+
+            {auth && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="transition hover:text-white"
+              >
+                Log out
+              </button>
+            )}
+          </div>
+        </nav>
+      </header>
+    </div>
   );
 }

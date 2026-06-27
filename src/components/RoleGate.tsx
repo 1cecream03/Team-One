@@ -19,13 +19,13 @@ export default function RoleGate({
         <h1 className="text-xl font-bold">
           This area is for {requiredRole}s
         </h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm text-ink/60">
           You're signed in as a {otherRole}. Log out from the navbar to
           switch roles, or head to the right place for you.
         </p>
         <Link
           to={redirectTo}
-          className="mt-6 inline-block rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)]"
+          className="mt-6 inline-block rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-floating"
         >
           {redirectLabel}
         </Link>

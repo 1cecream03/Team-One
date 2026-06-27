@@ -6,8 +6,8 @@ import { SpaceListing } from "../data/listings";
 import { BookingMessage, GuestSubmission } from "../types";
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-accent";
-const labelClass = "mb-1.5 block text-sm font-medium text-white/80";
+  "w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink/30 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/15";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink/70";
 
 function formatDate(value: string) {
   if (!value) return "";
@@ -50,7 +50,7 @@ export default function BookingModal({
       company: "Guest visit",
       website: "",
       contactName: "Guest",
-      contactEmail: auth?.email ?? "guest@nexus.dev",
+      contactEmail: auth?.email ?? "guest@rift.dev",
       vcNetwork: listing.vcNetwork,
       cityPreference: listing.neighborhood,
       spaceType: listing.spaceType,
@@ -65,10 +65,10 @@ export default function BookingModal({
     };
 
     const existing: GuestSubmission[] = JSON.parse(
-      localStorage.getItem("nexus_guests") ?? "[]",
+      localStorage.getItem("rift_guests") ?? "[]",
     );
     localStorage.setItem(
-      "nexus_guests",
+      "rift_guests",
       JSON.stringify([...existing, submission]),
     );
 
@@ -83,14 +83,14 @@ export default function BookingModal({
             ✓
           </div>
           <h1 className="text-2xl font-bold">Booking request sent</h1>
-          <p className="mt-3 text-sm text-white/60">
+          <p className="mt-3 text-sm text-ink/60">
             Your request for {listing.name} is with the host. Access details
             will unlock here once they confirm.
           </p>
           <button
             type="button"
             onClick={onClose}
-            className="mt-6 w-full rounded-full border border-border px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:border-white/30"
+            className="mt-6 w-full rounded-full border border-border bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:scale-105 hover:border-ink/20"
           >
             Done
           </button>
@@ -103,7 +103,7 @@ export default function BookingModal({
     <Modal onClose={onClose}>
       <Panel>
         <h1 className="text-2xl font-bold">Confirm & pay</h1>
-        <p className="mt-2 text-sm text-white/60">
+        <p className="mt-2 text-sm text-ink/60">
           {listing.name} · {formatDate(checkIn)} – {formatDate(checkOut)} ·{" "}
           {guests} {guests === 1 ? "person" : "people"}
         </p>
@@ -157,19 +157,19 @@ export default function BookingModal({
             />
           </div>
 
-          <div className="flex justify-between border-t border-border pt-4 text-sm font-semibold text-white">
+          <div className="flex justify-between border-t border-border pt-4 text-sm font-semibold text-ink">
             <span>Total</span>
             <span>S${total}</span>
           </div>
 
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-ink/40">
             Funds are held until the host confirms — you won't be charged
             until your request is accepted.
           </p>
 
           <button
             type="submit"
-            className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)]"
+            className="w-full rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-floating"
           >
             Pay S${total}
           </button>

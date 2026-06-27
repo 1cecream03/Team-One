@@ -5,8 +5,8 @@ import RoleGate from "../components/RoleGate";
 import { AMENITIES, HostSubmission, SPACE_TYPES, VC_NETWORKS } from "../types";
 
 const inputClass =
-  "w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-accent";
-const labelClass = "mb-1.5 block text-sm font-medium text-white/80";
+  "w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink/30 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/15";
+const labelClass = "mb-1.5 block text-sm font-medium text-ink/70";
 
 export default function ListSpace() {
   const [authed, setAuthed] = useState(() => !!loadAuth());
@@ -58,10 +58,10 @@ export default function ListSpace() {
     };
 
     const existing: HostSubmission[] = JSON.parse(
-      localStorage.getItem("nexus_hosts") ?? "[]",
+      localStorage.getItem("rift_hosts") ?? "[]",
     );
     localStorage.setItem(
-      "nexus_hosts",
+      "rift_hosts",
       JSON.stringify([...existing, submission]),
     );
 
@@ -93,7 +93,7 @@ export default function ListSpace() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="text-3xl font-bold sm:text-4xl">List your space</h1>
-      <p className="mt-2 text-white/60">
+      <p className="mt-2 text-ink/60">
         Tell us about the space you have available — we'll match it with
         portfolio companies looking for exactly this.
       </p>
@@ -150,7 +150,7 @@ export default function ListSpace() {
                 <option
                   key={network}
                   value={network}
-                  className="bg-background text-white"
+                  className="bg-white text-ink"
                 >
                   {network}
                 </option>
@@ -168,7 +168,7 @@ export default function ListSpace() {
                 <option
                   key={type}
                   value={type}
-                  className="bg-background text-white"
+                  className="bg-white text-ink"
                 >
                   {type}
                 </option>
@@ -231,13 +231,13 @@ export default function ListSpace() {
             {AMENITIES.map((amenity) => (
               <label
                 key={amenity}
-                className="flex items-center gap-2 text-sm text-white/80"
+                className="flex items-center gap-2 text-sm text-ink/80"
               >
                 <input
                   type="checkbox"
                   checked={amenities.includes(amenity)}
                   onChange={() => toggleAmenity(amenity)}
-                  className="h-4 w-4 rounded border-border bg-white/5 accent-accent"
+                  className="h-4 w-4 rounded border-border bg-white accent-accent"
                 />
                 {amenity}
               </label>
@@ -257,12 +257,12 @@ export default function ListSpace() {
               onChange={(e) => setRate(e.target.value)}
               className={`${inputClass} max-w-xs disabled:opacity-40`}
             />
-            <label className="flex items-center gap-2 text-sm text-white/80">
+            <label className="flex items-center gap-2 text-sm text-ink/80">
               <input
                 type="checkbox"
                 checked={suggestRate}
                 onChange={(e) => setSuggestRate(e.target.checked)}
-                className="h-4 w-4 rounded border-border bg-white/5 accent-accent"
+                className="h-4 w-4 rounded border-border bg-white accent-accent"
               />
               Suggest a rate for me
             </label>
@@ -276,7 +276,7 @@ export default function ListSpace() {
 
         <button
           type="submit"
-          className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_24px_rgba(99,102,241,0.55)]"
+          className="rounded-full bg-gradient-to-br from-accentFrom to-accentTo px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-floating"
         >
           Submit listing
         </button>
