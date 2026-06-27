@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Calendar, MapPin, Minus, Plus, Users } from "lucide-react";
+import { Calendar, MapPin, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export interface Region {
@@ -8,27 +8,44 @@ export interface Region {
   neighborhoods: string[];
 }
 
+export interface DateRange {
+  start: Date | null;
+  end: Date | null;
+}
+
+export const PAX_RANGES = ["1-5", "6-15", "16-30", "31-50", "50+"];
+
 type OpenField = "location" | "date" | "pax" | null;
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+function formatDay(date: Date) {
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+function formatDateRangeLabel(range: DateRange) {
+  if (range.start && range.end) {
+    return `${formatDay(range.start)} – ${formatDay(range.end)}`;
+  }
+  if (range.start) {
+    return `${formatDay(range.start)} – pick end date`;
+  }
+  return "When?";
+}
+
+function isWithinRange(date: Date, start: Date | null, end: Date | null) {
+  if (!start || !end) return false;
+  return date > start && date < end;
 }
 
 function MonthCalendar({
-  value,
+  range,
   onSelect,
 }: {
-  value: Date | null;
+  range: DateRange;
   onSelect: (date: Date) => void;
 }) {
-  const [cursor, setCursor] = useState(value ?? new Date());
+  const [cursor, setCursor] = useState(range.start ?? new Date());
 
   const year = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -69,17 +86,21 @@ function MonthCalendar({
         {cells.map((day, i) => {
           if (day === null) return <span key={`empty-${i}`} />;
           const date = new Date(year, month, day);
-          const isSelected =
-            value && date.toDateString() === value.toDateString();
+          const isEndpoint =
+            (range.start && date.toDateString() === range.start.toDateString()) ||
+            (range.end && date.toDateString() === range.end.toDateString());
+          const inRange = isWithinRange(date, range.start, range.end);
           return (
             <button
               key={day}
               type="button"
               onClick={() => onSelect(date)}
               className={`rounded-full py-1.5 text-sm transition ${
-                isSelected
+                isEndpoint
                   ? "bg-accent text-white"
-                  : "text-white/80 hover:bg-white/10"
+                  : inRange
+                    ? "bg-accent/20 text-white"
+                    : "text-white/80 hover:bg-white/10"
               }`}
             >
               {day}
@@ -94,24 +115,27 @@ function MonthCalendar({
 export default function SearchBar({
   regions,
   location,
-  date,
-  pax,
+  dateRange,
+  paxRange,
   onLocationChange,
-  onDateChange,
-  onPaxChange,
+  onDateRangeChange,
+  onPaxRangeChange,
   onSearch,
 }: {
   regions: Region[];
   location: string | null;
-  date: Date | null;
-  pax: number;
-  onLocationChange: (key: string) => void;
-  onDateChange: (date: Date) => void;
-  onPaxChange: (pax: number) => void;
+  dateRange: DateRange;
+  paxRange: string | null;
+  onLocationChange: (key: string | null) => void;
+  onDateRangeChange: (range: DateRange) => void;
+  onPaxRangeChange: (range: string) => void;
   onSearch: () => void;
 }) {
   const [openField, setOpenField] = useState<OpenField>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedRegion = regions.find((r) => r.key === location) ?? null;
+  const [locationQuery, setLocationQuery] = useState(selectedRegion?.label ?? "");
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -126,7 +150,27 @@ export default function SearchBar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedRegion = regions.find((r) => r.key === location);
+  const filteredRegions = regions.filter((region) => {
+    const query = locationQuery.trim().toLowerCase();
+    if (!query) return true;
+    return (
+      region.label.toLowerCase().includes(query) ||
+      region.neighborhoods.some((n) => n.toLowerCase().includes(query))
+    );
+  });
+
+  function handleDateSelect(selected: Date) {
+    if (!dateRange.start || (dateRange.start && dateRange.end)) {
+      onDateRangeChange({ start: selected, end: null });
+      return;
+    }
+    if (selected < dateRange.start) {
+      onDateRangeChange({ start: selected, end: dateRange.start });
+    } else {
+      onDateRangeChange({ start: dateRange.start, end: selected });
+    }
+    setOpenField(null);
+  }
 
   return (
     <div
@@ -134,23 +178,29 @@ export default function SearchBar({
       className="relative mx-auto w-full max-w-3xl sm:w-[70%]"
     >
       <div className="flex flex-col rounded-3xl border border-accent/30 bg-white/5 backdrop-blur-md sm:flex-row sm:items-stretch sm:rounded-full">
-        <button
-          type="button"
-          onClick={() => setOpenField(openField === "location" ? null : "location")}
-          className={`flex flex-1 items-center gap-3 px-6 py-4 text-left transition ${
+        <div
+          className={`flex flex-1 items-center gap-3 px-6 py-4 transition ${
             openField === "location" ? "shadow-[0_0_0_1px_rgba(99,102,241,0.4)]" : ""
           }`}
         >
           <MapPin size={18} className="shrink-0 text-accent" />
-          <span className="min-w-0">
+          <span className="min-w-0 flex-1">
             <span className="block text-xs font-medium text-white/50">
               Location
             </span>
-            <span className="block truncate text-sm text-white">
-              {selectedRegion ? selectedRegion.label : "Where in Singapore?"}
-            </span>
+            <input
+              value={locationQuery}
+              onChange={(e) => {
+                setLocationQuery(e.target.value);
+                onLocationChange(null);
+                setOpenField("location");
+              }}
+              onFocus={() => setOpenField("location")}
+              placeholder="Where in Singapore?"
+              className="w-full truncate bg-transparent text-sm text-white outline-none placeholder:text-white/30"
+            />
           </span>
-        </button>
+        </div>
 
         <div className="hidden w-px bg-border sm:block" />
 
@@ -165,7 +215,7 @@ export default function SearchBar({
           <span className="min-w-0">
             <span className="block text-xs font-medium text-white/50">Date</span>
             <span className="block truncate text-sm text-white">
-              {date ? formatDate(date) : "When?"}
+              {formatDateRangeLabel(dateRange)}
             </span>
           </span>
         </button>
@@ -185,7 +235,7 @@ export default function SearchBar({
               Team Size
             </span>
             <span className="block truncate text-sm text-white">
-              {pax > 0 ? `${pax} people` : "How many?"}
+              {paxRange ? `${paxRange} people` : "How many?"}
             </span>
           </span>
         </button>
@@ -203,7 +253,7 @@ export default function SearchBar({
       </div>
 
       <AnimatePresence>
-        {openField === "location" && (
+        {openField === "location" && filteredRegions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -213,12 +263,13 @@ export default function SearchBar({
           >
             <p className="mb-2 text-center text-lg">🇸🇬</p>
             <div className="space-y-1">
-              {regions.map((region) => (
+              {filteredRegions.map((region) => (
                 <button
                   key={region.key}
                   type="button"
                   onClick={() => {
                     onLocationChange(region.key);
+                    setLocationQuery(region.label);
                     setOpenField(null);
                   }}
                   className="w-full rounded-lg px-3 py-2 text-left transition hover:bg-white/10"
@@ -243,13 +294,7 @@ export default function SearchBar({
             transition={{ duration: 0.15 }}
             className="absolute left-0 top-full z-10 mt-2 rounded-2xl border border-border bg-background/95 shadow-xl backdrop-blur-md"
           >
-            <MonthCalendar
-              value={date}
-              onSelect={(selected) => {
-                onDateChange(selected);
-                setOpenField(null);
-              }}
-            />
+            <MonthCalendar range={dateRange} onSelect={handleDateSelect} />
           </motion.div>
         )}
 
@@ -259,24 +304,26 @@ export default function SearchBar({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-background/95 p-4 shadow-xl backdrop-blur-md"
+            className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-background/95 p-3 shadow-xl backdrop-blur-md"
           >
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => onPaxChange(Math.max(1, pax - 1))}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-white/80 hover:bg-white/10"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="text-base font-medium">{pax || 1}</span>
-              <button
-                type="button"
-                onClick={() => onPaxChange(Math.min(500, (pax || 1) + 1))}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-white/80 hover:bg-white/10"
-              >
-                <Plus size={14} />
-              </button>
+            <div className="space-y-1">
+              {PAX_RANGES.map((range) => (
+                <button
+                  key={range}
+                  type="button"
+                  onClick={() => {
+                    onPaxRangeChange(range);
+                    setOpenField(null);
+                  }}
+                  className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                    paxRange === range
+                      ? "bg-accent text-white"
+                      : "text-white/80 hover:bg-white/10"
+                  }`}
+                >
+                  {range} people
+                </button>
+              ))}
             </div>
           </motion.div>
         )}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import SearchBar, { Region } from "../components/SearchBar";
+import SearchBar, { DateRange, Region } from "../components/SearchBar";
 import SpaceCard, { SpaceListing } from "../components/SpaceCard";
 
 const SG_REGIONS: Region[] = [
@@ -56,10 +56,13 @@ export default function Find() {
   const [location, setLocation] = useState<string | null>(
     searchParams.get("location"),
   );
-  const [date, setDate] = useState<Date | null>(
-    parseDateParam(searchParams.get("date")),
+  const [dateRange, setDateRange] = useState<DateRange>({
+    start: parseDateParam(searchParams.get("dateStart")),
+    end: parseDateParam(searchParams.get("dateEnd")),
+  });
+  const [paxRange, setPaxRange] = useState<string | null>(
+    searchParams.get("pax"),
   );
-  const [pax, setPax] = useState<number>(Number(searchParams.get("pax")) || 1);
   const [appliedLocation, setAppliedLocation] = useState<string | null>(
     searchParams.get("location"),
   );
@@ -69,8 +72,9 @@ export default function Find() {
     setAppliedLocation(location);
 
     const params: Record<string, string> = { location };
-    if (date) params.date = date.toISOString().slice(0, 10);
-    if (pax) params.pax = String(pax);
+    if (dateRange.start) params.dateStart = dateRange.start.toISOString().slice(0, 10);
+    if (dateRange.end) params.dateEnd = dateRange.end.toISOString().slice(0, 10);
+    if (paxRange) params.pax = paxRange;
     setSearchParams(params);
   }
 
@@ -93,11 +97,11 @@ export default function Find() {
         <SearchBar
           regions={SG_REGIONS}
           location={location}
-          date={date}
-          pax={pax}
+          dateRange={dateRange}
+          paxRange={paxRange}
           onLocationChange={setLocation}
-          onDateChange={setDate}
-          onPaxChange={setPax}
+          onDateRangeChange={setDateRange}
+          onPaxRangeChange={setPaxRange}
           onSearch={handleSearch}
         />
       </div>
