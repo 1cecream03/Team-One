@@ -1,0 +1,62 @@
+export type SubmissionStatus = "New" | "Contacted" | "Matched" | "Completed";
+
+export const VC_NETWORKS = [
+  "a16z",
+  "Sequoia",
+  "YC",
+  "Accel",
+  "General Catalyst",
+  "Other",
+] as const;
+
+export const SPACE_TYPES = [
+  "Private office",
+  "Floor",
+  "Boardroom",
+  "Event space",
+] as const;
+
+export const AMENITIES = [
+  "Fast Wi-Fi",
+  "A/V equipment",
+  "Catering kitchen",
+  "Parking",
+  "24/7 access",
+] as const;
+
+export interface HostSubmission {
+  id: string;
+  company: string;
+  website: string;
+  contactName: string;
+  contactEmail: string;
+  vcNetwork: string;
+  city: string;
+  neighborhood: string;
+  spaceType: string;
+  capacity: number;
+  availability: string;
+  amenities: string[];
+  monthlyHours: number;
+  rate: number | "suggest";
+  status: SubmissionStatus;
+  submittedAt: string;
+}
+
+export interface GuestSubmission {
+  id: string;
+  company: string;
+  website: string;
+  contactName: string;
+  contactEmail: string;
+  vcNetwork: string;
+  cityPreference: string;
+  spaceType: string;
+  dateRange: string;
+  frequency: "one-off" | "recurring";
+  teamSize: number;
+  amenities: string[];
+  budgetRange: string;
+  status: SubmissionStatus;
+  submittedAt: string;
+}
