@@ -17,7 +17,7 @@ export default function Footer() {
           <Link to="/list" className="transition hover:text-white">
             List Your Space
           </Link>
-          <Link to="/book" className="transition hover:text-white">
+          <Link to="/find" className="transition hover:text-white">
             Find a Space
           </Link>
         </div>

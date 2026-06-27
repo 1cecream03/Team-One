@@ -30,10 +30,10 @@ export default function Navbar() {
             List
           </Link>
           <Link
-            to="/book"
+            to="/find"
             className="rounded-full bg-accent px-4 py-2 text-white transition hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]"
           >
-            Book
+            Find a Space
           </Link>
         </div>
       </nav>

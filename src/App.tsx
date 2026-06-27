@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ListSpace from "./pages/ListSpace";
 import FindSpace from "./pages/FindSpace";
+import Find from "./pages/Find";
 import Admin from "./pages/Admin";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/list" element={<ListSpace />} />
+          <Route path="/find" element={<Find />} />
           <Route path="/book" element={<FindSpace />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>

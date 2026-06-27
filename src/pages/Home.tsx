@@ -43,7 +43,7 @@ export default function Home() {
             List Your Space
           </Link>
           <Link
-            to="/book"
+            to="/find"
             className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:border-white/30"
           >
             Find a Space

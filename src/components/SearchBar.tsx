@@ -1,0 +1,286 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { Calendar, MapPin, Minus, Plus, Users } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+export interface Region {
+  key: string;
+  label: string;
+  neighborhoods: string[];
+}
+
+type OpenField = "location" | "date" | "pax" | null;
+
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function MonthCalendar({
+  value,
+  onSelect,
+}: {
+  value: Date | null;
+  onSelect: (date: Date) => void;
+}) {
+  const [cursor, setCursor] = useState(value ?? new Date());
+
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [
+    ...Array.from({ length: firstDay }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+
+  return (
+    <div className="w-72 p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setCursor(new Date(year, month - 1, 1))}
+          className="rounded px-2 py-1 text-white/60 hover:bg-white/10"
+        >
+          ‹
+        </button>
+        <span className="text-sm font-medium">
+          {cursor.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+        </span>
+        <button
+          type="button"
+          onClick={() => setCursor(new Date(year, month + 1, 1))}
+          className="rounded px-2 py-1 text-white/60 hover:bg-white/10"
+        >
+          ›
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center text-xs text-white/40">
+        {WEEKDAYS.map((day, i) => (
+          <span key={`${day}-${i}`}>{day}</span>
+        ))}
+      </div>
+      <div className="mt-1 grid grid-cols-7 gap-1">
+        {cells.map((day, i) => {
+          if (day === null) return <span key={`empty-${i}`} />;
+          const date = new Date(year, month, day);
+          const isSelected =
+            value && date.toDateString() === value.toDateString();
+          return (
+            <button
+              key={day}
+              type="button"
+              onClick={() => onSelect(date)}
+              className={`rounded-full py-1.5 text-sm transition ${
+                isSelected
+                  ? "bg-accent text-white"
+                  : "text-white/80 hover:bg-white/10"
+              }`}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function SearchBar({
+  regions,
+  location,
+  date,
+  pax,
+  onLocationChange,
+  onDateChange,
+  onPaxChange,
+  onSearch,
+}: {
+  regions: Region[];
+  location: string | null;
+  date: Date | null;
+  pax: number;
+  onLocationChange: (key: string) => void;
+  onDateChange: (date: Date) => void;
+  onPaxChange: (pax: number) => void;
+  onSearch: () => void;
+}) {
+  const [openField, setOpenField] = useState<OpenField>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpenField(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedRegion = regions.find((r) => r.key === location);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative mx-auto w-full max-w-3xl sm:w-[70%]"
+    >
+      <div className="flex flex-col rounded-3xl border border-accent/30 bg-white/5 backdrop-blur-md sm:flex-row sm:items-stretch sm:rounded-full">
+        <button
+          type="button"
+          onClick={() => setOpenField(openField === "location" ? null : "location")}
+          className={`flex flex-1 items-center gap-3 px-6 py-4 text-left transition ${
+            openField === "location" ? "shadow-[0_0_0_1px_rgba(99,102,241,0.4)]" : ""
+          }`}
+        >
+          <MapPin size={18} className="shrink-0 text-accent" />
+          <span className="min-w-0">
+            <span className="block text-xs font-medium text-white/50">
+              Location
+            </span>
+            <span className="block truncate text-sm text-white">
+              {selectedRegion ? selectedRegion.label : "Where in Singapore?"}
+            </span>
+          </span>
+        </button>
+
+        <div className="hidden w-px bg-border sm:block" />
+
+        <button
+          type="button"
+          onClick={() => setOpenField(openField === "date" ? null : "date")}
+          className={`flex flex-1 items-center gap-3 px-6 py-4 text-left transition ${
+            openField === "date" ? "shadow-[0_0_0_1px_rgba(99,102,241,0.4)]" : ""
+          }`}
+        >
+          <Calendar size={18} className="shrink-0 text-accent" />
+          <span className="min-w-0">
+            <span className="block text-xs font-medium text-white/50">Date</span>
+            <span className="block truncate text-sm text-white">
+              {date ? formatDate(date) : "When?"}
+            </span>
+          </span>
+        </button>
+
+        <div className="hidden w-px bg-border sm:block" />
+
+        <button
+          type="button"
+          onClick={() => setOpenField(openField === "pax" ? null : "pax")}
+          className={`flex flex-1 items-center gap-3 px-6 py-4 text-left transition ${
+            openField === "pax" ? "shadow-[0_0_0_1px_rgba(99,102,241,0.4)]" : ""
+          }`}
+        >
+          <Users size={18} className="shrink-0 text-accent" />
+          <span className="min-w-0">
+            <span className="block text-xs font-medium text-white/50">
+              Team Size
+            </span>
+            <span className="block truncate text-sm text-white">
+              {pax > 0 ? `${pax} people` : "How many?"}
+            </span>
+          </span>
+        </button>
+
+        <div className="p-2 sm:flex sm:items-center">
+          <button
+            type="button"
+            disabled={!location}
+            onClick={onSearch}
+            className="w-full rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-none sm:w-auto"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {openField === "location" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 top-full z-10 mt-2 w-80 rounded-2xl border border-border bg-background/95 p-4 shadow-xl backdrop-blur-md"
+          >
+            <p className="mb-2 text-center text-lg">🇸🇬</p>
+            <div className="space-y-1">
+              {regions.map((region) => (
+                <button
+                  key={region.key}
+                  type="button"
+                  onClick={() => {
+                    onLocationChange(region.key);
+                    setOpenField(null);
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left transition hover:bg-white/10"
+                >
+                  <span className="block text-sm font-semibold text-white">
+                    {region.label}
+                  </span>
+                  <span className="block text-xs text-white/50">
+                    {region.neighborhoods.join(", ")}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {openField === "date" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 top-full z-10 mt-2 rounded-2xl border border-border bg-background/95 shadow-xl backdrop-blur-md"
+          >
+            <MonthCalendar
+              value={date}
+              onSelect={(selected) => {
+                onDateChange(selected);
+                setOpenField(null);
+              }}
+            />
+          </motion.div>
+        )}
+
+        {openField === "pax" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-background/95 p-4 shadow-xl backdrop-blur-md"
+          >
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => onPaxChange(Math.max(1, pax - 1))}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-white/80 hover:bg-white/10"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="text-base font-medium">{pax || 1}</span>
+              <button
+                type="button"
+                onClick={() => onPaxChange(Math.min(500, (pax || 1) + 1))}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-white/80 hover:bg-white/10"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
