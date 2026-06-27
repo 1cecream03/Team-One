@@ -1,3 +1,256 @@
+import { FormEvent, useEffect, useState } from "react";
+import { GuestSubmission, HostSubmission, SubmissionStatus } from "../types";
+
+const ADMIN_PASSWORD = "nexus2035";
+
+const STATUS_ORDER: SubmissionStatus[] = [
+  "New",
+  "Contacted",
+  "Matched",
+  "Completed",
+];
+
+const STATUS_STYLES: Record<SubmissionStatus, string> = {
+  New: "bg-accent/20 text-accent",
+  Contacted: "bg-yellow-500/20 text-yellow-300",
+  Matched: "bg-emerald-500/20 text-emerald-300",
+  Completed: "bg-white/10 text-white/60",
+};
+
+function nextStatus(status: SubmissionStatus): SubmissionStatus {
+  const index = STATUS_ORDER.indexOf(status);
+  return STATUS_ORDER[(index + 1) % STATUS_ORDER.length];
+}
+
+function loadHosts(): HostSubmission[] {
+  return JSON.parse(localStorage.getItem("nexus_hosts") ?? "[]");
+}
+
+function loadGuests(): GuestSubmission[] {
+  return JSON.parse(localStorage.getItem("nexus_guests") ?? "[]");
+}
+
+function buildMailto(host: HostSubmission, guest: GuestSubmission) {
+  const subject = `Nexus introduction: ${host.company} x ${guest.company}`;
+  const body = [
+    `Hi ${host.contactName} and ${guest.contactName},`,
+    "",
+    `Introducing you both via Nexus — ${host.company} has space available in ${host.city}, and ${guest.company} is looking for ${guest.spaceType.toLowerCase()} space in ${guest.cityPreference}.`,
+    "",
+    `${host.company}: ${host.contactName} (${host.contactEmail})`,
+    `${guest.company}: ${guest.contactName} (${guest.contactEmail})`,
+    "",
+    "Feel free to take it from here — happy matching!",
+    "— Nexus Concierge",
+  ].join("\n");
+
+  return `mailto:${host.contactEmail},${guest.contactEmail}?subject=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(body)}`;
+}
+
+function StatusTag({
+  status,
+  onClick,
+}: {
+  status: SubmissionStatus;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className={`rounded-full px-2.5 py-1 text-xs font-medium transition ${STATUS_STYLES[status]}`}
+    >
+      {status}
+    </button>
+  );
+}
+
 export default function Admin() {
-  return null;
+  const [authed, setAuthed] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [error, setError] = useState(false);
+
+  const [hosts, setHosts] = useState<HostSubmission[]>([]);
+  const [guests, setGuests] = useState<GuestSubmission[]>([]);
+  const [selectedHostId, setSelectedHostId] = useState<string | null>(null);
+  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authed) {
+      setHosts(loadHosts());
+      setGuests(loadGuests());
+    }
+  }, [authed]);
+
+  function handlePasswordSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      setAuthed(true);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  }
+
+  function cycleHostStatus(id: string) {
+    const updated = hosts.map((h) =>
+      h.id === id ? { ...h, status: nextStatus(h.status) } : h,
+    );
+    setHosts(updated);
+    localStorage.setItem("nexus_hosts", JSON.stringify(updated));
+  }
+
+  function cycleGuestStatus(id: string) {
+    const updated = guests.map((g) =>
+      g.id === id ? { ...g, status: nextStatus(g.status) } : g,
+    );
+    setGuests(updated);
+    localStorage.setItem("nexus_guests", JSON.stringify(updated));
+  }
+
+  const selectedHost = hosts.find((h) => h.id === selectedHostId) ?? null;
+  const selectedGuest = guests.find((g) => g.id === selectedGuestId) ?? null;
+
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-sm px-6 py-32">
+        <h1 className="text-2xl font-bold">Admin access</h1>
+        <p className="mt-2 text-sm text-white/60">
+          Enter the admin password to continue.
+        </p>
+        <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-3">
+          <input
+            type="password"
+            autoFocus
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            className="w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-accent"
+          />
+          {error && (
+            <p className="text-sm text-red-400">Incorrect password.</p>
+          )}
+          <button
+            type="submit"
+            className="w-full rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-105"
+          >
+            Enter
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-6xl px-6 py-12">
+      <h1 className="text-2xl font-bold sm:text-3xl">Admin dashboard</h1>
+      <p className="mt-1 text-sm text-white/60">
+        Select one host and one guest card to match them.
+      </p>
+
+      <div className="mt-8 grid gap-8 sm:grid-cols-2">
+        <div>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
+            Host submissions
+          </h2>
+          <div className="space-y-3">
+            {hosts.length === 0 && (
+              <p className="text-sm text-white/40">No host submissions yet.</p>
+            )}
+            {hosts.map((host) => (
+              <button
+                key={host.id}
+                type="button"
+                onClick={() =>
+                  setSelectedHostId(
+                    selectedHostId === host.id ? null : host.id,
+                  )
+                }
+                className={`w-full rounded-xl border p-4 text-left transition ${
+                  selectedHostId === host.id
+                    ? "border-accent bg-accent/10"
+                    : "border-border bg-white/5 hover:bg-white/10"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{host.company}</p>
+                    <p className="text-sm text-white/60">{host.contactName}</p>
+                  </div>
+                  <StatusTag
+                    status={host.status}
+                    onClick={() => cycleHostStatus(host.id)}
+                  />
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
+                  <span>{host.vcNetwork}</span>
+                  <span>{host.city}</span>
+                  <span>{host.spaceType}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
+            Guest submissions
+          </h2>
+          <div className="space-y-3">
+            {guests.length === 0 && (
+              <p className="text-sm text-white/40">No guest submissions yet.</p>
+            )}
+            {guests.map((guest) => (
+              <button
+                key={guest.id}
+                type="button"
+                onClick={() =>
+                  setSelectedGuestId(
+                    selectedGuestId === guest.id ? null : guest.id,
+                  )
+                }
+                className={`w-full rounded-xl border p-4 text-left transition ${
+                  selectedGuestId === guest.id
+                    ? "border-accent bg-accent/10"
+                    : "border-border bg-white/5 hover:bg-white/10"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{guest.company}</p>
+                    <p className="text-sm text-white/60">{guest.contactName}</p>
+                  </div>
+                  <StatusTag
+                    status={guest.status}
+                    onClick={() => cycleGuestStatus(guest.id)}
+                  />
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
+                  <span>{guest.vcNetwork}</span>
+                  <span>{guest.cityPreference}</span>
+                  <span>{guest.spaceType}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {selectedHost && selectedGuest && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
+          <a
+            href={buildMailto(selectedHost, selectedGuest)}
+            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:scale-105"
+          >
+            Match {selectedHost.company} × {selectedGuest.company} — send intro
+            email
+          </a>
+        </div>
+      )}
+    </div>
+  );
 }
