@@ -1,3 +1,5 @@
+import { HostSubmission } from "../types";
+
 export interface Region {
   key: string;
   label: string;
@@ -90,3 +92,53 @@ export const LISTINGS: SpaceListing[] = LISTINGS_BASE.map((listing, index) => ({
   ...listing,
   images: imagesFor(index),
 }));
+
+function regionForCity(city: string, neighborhood: string) {
+  const query = `${city} ${neighborhood}`.toLowerCase();
+  const match = SG_REGIONS.find(
+    (region) =>
+      query.includes(region.label.toLowerCase()) ||
+      region.neighborhoods.some((n) => query.includes(n.toLowerCase())),
+  );
+  return match ?? SG_REGIONS[0];
+}
+
+function hostSubmissionToListing(
+  host: HostSubmission,
+  index: number,
+): SpaceListing {
+  const region = regionForCity(host.city, host.neighborhood);
+  return {
+    id: `host-${host.id}`,
+    name: host.company,
+    regionKey: region.key,
+    regionLabel: region.label,
+    neighborhood: host.neighborhood || host.city,
+    capacity: host.capacity,
+    rate: typeof host.rate === "number" ? host.rate : 40,
+    vcNetwork: host.vcNetwork,
+    spaceType: host.spaceType,
+    amenities: host.amenities,
+    description: `Listed by a ${host.vcNetwork} portfolio company. Available ${
+      host.availability || "by arrangement"
+    }.`,
+    images: imagesFor(index),
+  };
+}
+
+function loadHostListings(): SpaceListing[] {
+  const hosts: HostSubmission[] = JSON.parse(
+    localStorage.getItem("nexus_hosts") ?? "[]",
+  );
+  return hosts.map((host, index) =>
+    hostSubmissionToListing(host, LISTINGS_BASE.length + index),
+  );
+}
+
+export function getAllListings(): SpaceListing[] {
+  return [...LISTINGS, ...loadHostListings()];
+}
+
+export function getListingById(id: string): SpaceListing | undefined {
+  return getAllListings().find((listing) => listing.id === id);
+}

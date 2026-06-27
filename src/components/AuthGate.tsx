@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
-import { AUTH_KEY, AuthSession } from "../types";
+import Panel from "./Panel";
+import { AUTH_CHANGE_EVENT, AUTH_KEY, AuthSession, UserRole } from "../types";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-accent";
@@ -10,20 +11,27 @@ export function loadAuth(): AuthSession | null {
   return raw ? JSON.parse(raw) : null;
 }
 
+export function logout() {
+  localStorage.removeItem(AUTH_KEY);
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+}
+
 export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
   const [mode, setMode] = useState<"signin" | "register">("signin");
+  const [role, setRole] = useState<UserRole>("guest");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    const session: AuthSession = { email };
+    const session: AuthSession = { email, role };
     localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+    window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
     onAuthed();
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-white/5 p-8 backdrop-blur-sm">
+    <Panel>
         <div className="mb-6 flex gap-2 rounded-full border border-border bg-white/5 p-1 text-sm font-medium">
           <button
             type="button"
@@ -56,6 +64,34 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
+            <label className={labelClass}>I am a…</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole("guest")}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
+                  role === "guest"
+                    ? "border-accent bg-accent/15 text-white"
+                    : "border-border bg-white/5 text-white/60 hover:text-white"
+                }`}
+              >
+                Guest — booking space
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("host")}
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
+                  role === "host"
+                    ? "border-accent bg-accent/15 text-white"
+                    : "border-border bg-white/5 text-white/60 hover:text-white"
+                }`}
+              >
+                Host — listing space
+              </button>
+            </div>
+          </div>
+
+          <div>
             <label className={labelClass}>Work email</label>
             <input
               required
@@ -86,6 +122,6 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
             {mode === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
-    </div>
+    </Panel>
   );
 }

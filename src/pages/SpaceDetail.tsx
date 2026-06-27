@@ -1,8 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import AuthGate, { loadAuth } from "../components/AuthGate";
 import BookingModal from "../components/BookingModal";
-import { LISTINGS } from "../data/listings";
+import RoleGate from "../components/RoleGate";
+import { PAX_RANGES } from "../components/SearchBar";
+import { getListingById } from "../data/listings";
+
+function minTeamSize(range: string): number {
+  return Number(range.replace("+", "").split("-")[0]) || 0;
+}
 
 const microLabelClass =
   "block text-[10px] font-bold uppercase tracking-wide text-white/40";
@@ -21,11 +29,24 @@ function nightsBetween(checkIn: string, checkOut: string): number {
 
 export default function SpaceDetail() {
   const { id } = useParams();
-  const listing = LISTINGS.find((l) => l.id === id);
+  const listing = id ? getListingById(id) : undefined;
+  const [authed, setAuthed] = useState(() => !!loadAuth());
   const [bookingOpen, setBookingOpen] = useState(false);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState("");
+  const [guestRange, setGuestRange] = useState<string | null>(null);
+  const [paxOpen, setPaxOpen] = useState(false);
+  const paxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (paxRef.current && !paxRef.current.contains(event.target as Node)) {
+        setPaxOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const days = nightsBetween(checkIn, checkOut);
   const total = useMemo(
@@ -47,9 +68,29 @@ export default function SpaceDetail() {
     );
   }
 
-  const guestsNum = Number(guests) || 0;
-  const canReserve =
-    days > 0 && guestsNum > 0 && guestsNum <= listing.capacity;
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-md px-6 py-16">
+        <AuthGate onAuthed={() => setAuthed(true)} />
+      </div>
+    );
+  }
+
+  if (loadAuth()?.role !== "guest") {
+    return (
+      <RoleGate
+        requiredRole="guest"
+        redirectTo="/list"
+        redirectLabel="List a space instead"
+      />
+    );
+  }
+
+  const guestsNum = guestRange ? minTeamSize(guestRange) : 0;
+  const canReserve = days > 0 && guestsNum > 0 && guestsNum <= listing.capacity;
+  const availableRanges = PAX_RANGES.filter(
+    (range) => minTeamSize(range) <= listing.capacity,
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
@@ -142,20 +183,52 @@ export default function SpaceDetail() {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between border-t border-border px-3 py-2.5">
-              <div>
-                <label className={microLabelClass}>Guests</label>
-                <input
-                  type="number"
-                  min="1"
-                  max={listing.capacity}
-                  placeholder={`Up to ${listing.capacity}`}
-                  value={guests}
-                  onChange={(e) => setGuests(e.target.value)}
-                  className={`${gridInputClass} w-20`}
-                />
-              </div>
-              <ChevronDown size={16} className="shrink-0 text-white/40" />
+            <div ref={paxRef} className="relative border-t border-border">
+              <button
+                type="button"
+                onClick={() => setPaxOpen((open) => !open)}
+                className="flex w-full items-center justify-between px-3 py-2.5 text-left"
+              >
+                <div>
+                  <span className={microLabelClass}>Guests</span>
+                  <span className="mt-0.5 block text-sm text-white">
+                    {guestRange ? `${guestRange} people` : `Up to ${listing.capacity}`}
+                  </span>
+                </div>
+                <ChevronDown size={16} className="shrink-0 text-white/40" />
+              </button>
+
+              <AnimatePresence>
+                {paxOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 top-full z-10 mt-2 w-56 rounded-2xl border border-border bg-background/95 p-3 shadow-xl backdrop-blur-md"
+                  >
+                    <div className="space-y-1">
+                      {availableRanges.map((range) => (
+                        <button
+                          key={range}
+                          type="button"
+                          onClick={() => {
+                            setGuestRange(range);
+                            setPaxOpen(false);
+                          }}
+                          className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                            guestRange === range
+                              ? "bg-accent text-white"
+                              : "text-white/80 hover:bg-white/10"
+                          }`}
+                        >
+                          {range} people
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

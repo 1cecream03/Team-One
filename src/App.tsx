@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import ListSpace from "./pages/ListSpace";
 import Find from "./pages/Find";
 import SpaceDetail from "./pages/SpaceDetail";
+import HostDashboard from "./pages/HostDashboard";
+import GuestDashboard from "./pages/GuestDashboard";
 import Admin from "./pages/Admin";
 
 export default function App() {
@@ -17,6 +19,8 @@ export default function App() {
           <Route path="/list" element={<ListSpace />} />
           <Route path="/find" element={<Find />} />
           <Route path="/find/:id" element={<SpaceDetail />} />
+          <Route path="/dashboard/host" element={<HostDashboard />} />
+          <Route path="/dashboard/guest" element={<GuestDashboard />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>

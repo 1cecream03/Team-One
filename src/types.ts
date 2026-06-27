@@ -1,4 +1,9 @@
-export type SubmissionStatus = "New" | "Contacted" | "Matched" | "Completed";
+export type SubmissionStatus =
+  | "New"
+  | "Contacted"
+  | "Matched"
+  | "Completed"
+  | "Rejected";
 
 export const VC_NETWORKS = [
   "VC1",
@@ -44,9 +49,19 @@ export interface HostSubmission {
 }
 
 export const AUTH_KEY = "nexus_auth";
+export const AUTH_CHANGE_EVENT = "nexus-auth-change";
+
+export type UserRole = "host" | "guest";
 
 export interface AuthSession {
   email: string;
+  role: UserRole;
+}
+
+export interface BookingMessage {
+  sender: "guest" | "host";
+  text: string;
+  at: string;
 }
 
 export interface GuestSubmission {
@@ -65,4 +80,5 @@ export interface GuestSubmission {
   budgetRange: string;
   status: SubmissionStatus;
   submittedAt: string;
+  messages?: BookingMessage[];
 }

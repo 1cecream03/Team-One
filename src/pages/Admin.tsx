@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import Panel from "../components/Panel";
 import { GuestSubmission, HostSubmission, SubmissionStatus } from "../types";
 
 const ADMIN_PASSWORD = "nexus2035";
@@ -15,6 +16,7 @@ const STATUS_STYLES: Record<SubmissionStatus, string> = {
   Contacted: "bg-yellow-500/20 text-yellow-300",
   Matched: "bg-emerald-500/20 text-emerald-300",
   Completed: "bg-white/10 text-white/60",
+  Rejected: "bg-red-500/20 text-red-300",
 };
 
 function nextStatus(status: SubmissionStatus): SubmissionStatus {
@@ -119,28 +121,30 @@ export default function Admin() {
   if (!authed) {
     return (
       <div className="mx-auto max-w-sm px-6 py-32">
-        <h1 className="text-2xl font-bold">Admin access</h1>
-        <p className="mt-2 text-sm text-white/60">
-          Enter the admin password to continue.
-        </p>
-        <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-3">
-          <input
-            type="password"
-            autoFocus
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-accent"
-          />
-          {error && (
-            <p className="text-sm text-red-400">Incorrect password.</p>
-          )}
-          <button
-            type="submit"
-            className="w-full rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-105"
-          >
-            Enter
-          </button>
-        </form>
+        <Panel>
+          <h1 className="text-2xl font-bold">Admin access</h1>
+          <p className="mt-2 text-sm text-white/60">
+            Enter the admin password to continue.
+          </p>
+          <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-3">
+            <input
+              type="password"
+              autoFocus
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              className="w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-accent"
+            />
+            {error && (
+              <p className="text-sm text-red-400">Incorrect password.</p>
+            )}
+            <button
+              type="submit"
+              className="w-full rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:scale-105"
+            >
+              Enter
+            </button>
+          </form>
+        </Panel>
       </div>
     );
   }

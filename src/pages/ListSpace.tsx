@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import AuthGate, { loadAuth } from "../components/AuthGate";
 import ConfirmationScreen from "../components/ConfirmationScreen";
+import RoleGate from "../components/RoleGate";
 import { AMENITIES, HostSubmission, SPACE_TYPES, VC_NETWORKS } from "../types";
 
 const inputClass =
@@ -72,6 +73,16 @@ export default function ListSpace() {
       <div className="mx-auto max-w-md px-6 py-16">
         <AuthGate onAuthed={() => setAuthed(true)} />
       </div>
+    );
+  }
+
+  if (loadAuth()?.role !== "host") {
+    return (
+      <RoleGate
+        requiredRole="host"
+        redirectTo="/find"
+        redirectLabel="Find a space instead"
+      />
     );
   }
 

@@ -1,8 +1,9 @@
 import { FormEvent, useState } from "react";
 import { loadAuth } from "./AuthGate";
 import Modal from "./Modal";
+import Panel from "./Panel";
 import { SpaceListing } from "../data/listings";
-import { GuestSubmission } from "../types";
+import { BookingMessage, GuestSubmission } from "../types";
 
 const inputClass =
   "w-full rounded-lg border border-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 outline-none transition focus:border-accent";
@@ -35,11 +36,15 @@ export default function BookingModal({
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
+  const [note, setNote] = useState("");
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     const auth = loadAuth();
+    const messages: BookingMessage[] = note.trim()
+      ? [{ sender: "guest", text: note.trim(), at: new Date().toISOString() }]
+      : [];
     const submission: GuestSubmission = {
       id: crypto.randomUUID(),
       company: "Guest visit",
@@ -56,6 +61,7 @@ export default function BookingModal({
       budgetRange: `$${total}`,
       status: "New",
       submittedAt: new Date().toISOString(),
+      messages,
     };
 
     const existing: GuestSubmission[] = JSON.parse(
@@ -72,7 +78,7 @@ export default function BookingModal({
   if (paid) {
     return (
       <Modal onClose={onClose}>
-        <div className="rounded-2xl border border-border bg-white/5 p-8 text-center backdrop-blur-sm">
+        <Panel className="text-center">
           <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-accent/20 text-2xl text-accent">
             ✓
           </div>
@@ -88,14 +94,14 @@ export default function BookingModal({
           >
             Done
           </button>
-        </div>
+        </Panel>
       </Modal>
     );
   }
 
   return (
     <Modal onClose={onClose}>
-      <div className="rounded-2xl border border-border bg-white/5 p-8 backdrop-blur-sm">
+      <Panel>
         <h1 className="text-2xl font-bold">Confirm & pay</h1>
         <p className="mt-2 text-sm text-white/60">
           {listing.name} · {formatDate(checkIn)} – {formatDate(checkOut)} ·{" "}
@@ -140,6 +146,17 @@ export default function BookingModal({
             </div>
           </div>
 
+          <div>
+            <label className={labelClass}>Message to host (optional)</label>
+            <textarea
+              rows={2}
+              placeholder="e.g. We'll need the room set up boardroom-style"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className={`${inputClass} resize-none`}
+            />
+          </div>
+
           <div className="flex justify-between border-t border-border pt-4 text-sm font-semibold text-white">
             <span>Total</span>
             <span>S${total}</span>
@@ -157,7 +174,7 @@ export default function BookingModal({
             Pay S${total}
           </button>
         </form>
-      </div>
+      </Panel>
     </Modal>
   );
 }
