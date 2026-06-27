@@ -22,8 +22,8 @@ export default function Navbar() {
         <Link to="/" className="text-lg font-bold tracking-tight">
           Nexus
         </Link>
-        <div className="flex items-center gap-8 text-sm font-medium text-white/80">
-          <Link to="/" className="transition hover:text-white">
+        <div className="flex items-center gap-3 text-sm font-medium text-white/80 sm:gap-8">
+          <Link to="/" className="hidden transition hover:text-white sm:inline">
             Home
           </Link>
           <Link to="/list" className="transition hover:text-white">
@@ -31,7 +31,7 @@ export default function Navbar() {
           </Link>
           <Link
             to="/find"
-            className="rounded-full bg-accent px-4 py-2 text-white transition hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+            className="rounded-full bg-accent px-3 py-1.5 text-xs text-white transition hover:scale-105 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] sm:px-4 sm:py-2 sm:text-sm"
           >
             Find a Space
           </Link>

@@ -241,10 +241,10 @@ export default function Admin() {
       </div>
 
       {selectedHost && selectedGuest && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
+        <div className="fixed bottom-6 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 px-2 sm:w-auto">
           <a
             href={buildMailto(selectedHost, selectedGuest)}
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:scale-105"
+            className="block truncate rounded-full bg-accent px-6 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-accent/30 transition hover:scale-105"
           >
             Match {selectedHost.company} × {selectedGuest.company} — send intro
             email

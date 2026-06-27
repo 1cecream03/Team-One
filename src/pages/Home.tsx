@@ -19,7 +19,7 @@ const valueProps = [
   },
 ];
 
-const investors = ["a16z", "Sequoia", "YC", "Accel", "General Catalyst"];
+const investors = ["VC1", "VC2", "VC3", "VC4", "VC5"];
 
 export default function Home() {
   return (
