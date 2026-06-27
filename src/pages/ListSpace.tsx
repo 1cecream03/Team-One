@@ -126,7 +126,11 @@ export default function ListSpace() {
               className={inputClass}
             >
               {VC_NETWORKS.map((network) => (
-                <option key={network} value={network}>
+                <option
+                  key={network}
+                  value={network}
+                  className="bg-background text-white"
+                >
                   {network}
                 </option>
               ))}
@@ -140,7 +144,11 @@ export default function ListSpace() {
               className={inputClass}
             >
               {SPACE_TYPES.map((type) => (
-                <option key={type} value={type}>
+                <option
+                  key={type}
+                  value={type}
+                  className="bg-background text-white"
+                >
                   {type}
                 </option>
               ))}

@@ -1,11 +1,11 @@
 export type SubmissionStatus = "New" | "Contacted" | "Matched" | "Completed";
 
 export const VC_NETWORKS = [
-  "a16z",
-  "Sequoia",
-  "YC",
-  "Accel",
-  "General Catalyst",
+  "VC1",
+  "VC2",
+  "VC3",
+  "VC4",
+  "VC5",
   "Other",
 ] as const;
 
