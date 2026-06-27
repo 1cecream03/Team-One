@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import AuthGate, { loadAuth } from "../components/AuthGate";
 import ConfirmationScreen from "../components/ConfirmationScreen";
 import { AMENITIES, HostSubmission, SPACE_TYPES, VC_NETWORKS } from "../types";
 
@@ -7,6 +8,7 @@ const inputClass =
 const labelClass = "mb-1.5 block text-sm font-medium text-white/80";
 
 export default function ListSpace() {
+  const [authed, setAuthed] = useState(() => !!loadAuth());
   const [submitted, setSubmitted] = useState(false);
 
   const [company, setCompany] = useState("");
@@ -63,6 +65,14 @@ export default function ListSpace() {
     );
 
     setSubmitted(true);
+  }
+
+  if (!authed) {
+    return (
+      <div className="mx-auto max-w-md px-6 py-16">
+        <AuthGate onAuthed={() => setAuthed(true)} />
+      </div>
+    );
   }
 
   if (submitted) {

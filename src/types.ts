@@ -43,14 +43,10 @@ export interface HostSubmission {
   submittedAt: string;
 }
 
-export const GUEST_PROFILE_KEY = "nexus_guest_profile";
+export const AUTH_KEY = "nexus_auth";
 
-export interface GuestProfile {
-  company: string;
-  website: string;
-  contactName: string;
-  contactEmail: string;
-  vcNetwork: string;
+export interface AuthSession {
+  email: string;
 }
 
 export interface GuestSubmission {

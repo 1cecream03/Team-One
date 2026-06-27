@@ -3,8 +3,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ListSpace from "./pages/ListSpace";
-import FindSpace from "./pages/FindSpace";
 import Find from "./pages/Find";
+import SpaceDetail from "./pages/SpaceDetail";
 import Admin from "./pages/Admin";
 
 export default function App() {
@@ -16,7 +16,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/list" element={<ListSpace />} />
           <Route path="/find" element={<Find />} />
-          <Route path="/book" element={<FindSpace />} />
+          <Route path="/find/:id" element={<SpaceDetail />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
